@@ -26,7 +26,7 @@ def main():
                        'Fwd Header Len', 'Bwd Header Len', 'Pkt Size Avg']
     count=0
 
-    for file in reversed(complete_netflow_list):
+    for file in complete_netflow_list:
         file_name = file
         dest_filename = file_name.replace('.csv', '_filtered.csv')
 
