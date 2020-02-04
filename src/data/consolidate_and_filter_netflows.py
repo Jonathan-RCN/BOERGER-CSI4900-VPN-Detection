@@ -26,7 +26,7 @@ def main():
                        'Fwd Header Len', 'Bwd Header Len', 'Pkt Size Avg']
     count=0
 
-    for file in complete_netflow_list:
+    for file in reversed(complete_netflow_list):
         file_name = file
         dest_filename = file_name.replace('.csv', '_filtered.csv')
 
@@ -99,7 +99,7 @@ def transfer_netflow_data(filtered_data, src_data, columns_to_keep, file_name, d
             for jj in range(0, src_data.shape[0] - 1):
                 if jj % 5000 == 0:
                     print(f'{jj} of {src_data.shape[0] - 1}')
-                if file_name.startswith("VPN"):
+                if file_name.startswith("vpn"):
                     filtered_data.loc[jj, dest_col_list[x]] = 1
                 else:
                     filtered_data.loc[jj, dest_col_list[x]] = 0

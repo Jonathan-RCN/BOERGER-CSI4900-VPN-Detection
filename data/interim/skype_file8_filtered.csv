@@ -1,0 +1,1 @@
+Flow ID,Src IP,Src Port,Dst IP,Dst Port,Timestamp,Protocol,Tot Fwd Pkts,Tot Bwd Pkts,Tot Pkts,TotLen Fwd Pkts,TotLen Bwd Pkts,TotLen Pkts,Flow Byts/s,Flow Pkts/s,Flow IAT Mean,Fwd Header Len,Bwd Header Len,Pkt Size Avg,Flow Type,VPN
