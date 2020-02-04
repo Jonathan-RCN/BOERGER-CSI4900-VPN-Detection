@@ -11,7 +11,7 @@ def main():
     complete_netflow_list = []
     print(os.getcwd())
     net_traffic_csv_dir = '../../data/raw/net_traffic_csv/'
-    filtered_netflow_csv_dir = '../../data/interim/'
+    filtered_netflow_csv_dir = '../../data/interim/filtered/'
 
     for file in os.listdir(net_traffic_csv_dir):
         if file.startswith("vpn"):
