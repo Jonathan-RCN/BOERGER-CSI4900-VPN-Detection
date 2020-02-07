@@ -23,12 +23,19 @@ def main():
 
     for file in os.listdir(net_traffic_csv_dir):
         complete_netflow_list.append(file)
+    filtered_netflows=[]
+    for file in os.listdir(filtered_netflow_csv_dir):
+        filtered_netflows.append(filtered_netflow_csv_dir+file)
+
+    create_filtered_csv(cummulative_netflow_csv, cummlative_dir)
+    produceOneCSV(filtered_netflows, cummlative_dir+cummulative_netflow_csv)
+
 
 
     columns_to_keep = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Fwd Pkts',
                        'Tot Bwd Pkts', 'TotLen Fwd Pkts', 'TotLen Bwd Pkts']
     count=0
-    create_filtered_csv(cummulative_netflow_csv, cummlative_dir)
+
 
     for file in complete_netflow_list:
         file_name = file
@@ -102,6 +109,12 @@ def transfer_netflow_data(src_data, columns_to_keep, file_name, dest_dir_filenam
         cummulative_netflow_file.loc[x] = to_append
     filtered_data.to_csv(dest_dir_filename, index=False)
     cummulative_netflow_file.to_csv(cummulative_dir_filename, index=False)
+
+def produceOneCSV(list_of_files, file_out):
+   # Consolidate all CSV files into one object
+   result_obj = pd.concat([pd.read_csv(file) for file in list_of_files])
+   # Convert the above object into a csv file and export
+   result_obj.to_csv(file_out, index=False, encoding="utf-8")
 
 
 
