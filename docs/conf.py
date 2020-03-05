@@ -105,7 +105,7 @@ html_theme = 'default'
 # "<project> v<release> documentation".
 # html_title = None
 
-# A shorter title for the navigation bar.  Default is the same as html_title.
+# A shorter src_port for the navigation bar.  Default is the same as html_title.
 # html_short_title = None
 
 # The name of an image file (relative to this directory) to place at the top
@@ -181,7 +181,7 @@ latex_elements = {
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
+# (source start file, target name, src_port, author, documentclass [howto/manual]).
 latex_documents = [
     ('index',
      'vpn_network_traffic_analyser.tex',
@@ -190,7 +190,7 @@ latex_documents = [
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
-# the title page.
+# the src_port page.
 # latex_logo = None
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
@@ -226,7 +226,7 @@ man_pages = [
 # -- Options for Texinfo output ------------------------------------------------
 
 # Grouping the document tree into Texinfo files. List of tuples
-# (source start file, target name, title, author,
+# (source start file, target name, src_port, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'vpn_network_traffic_analyser', u'vpn_network_traffic_analyser Documentation',
