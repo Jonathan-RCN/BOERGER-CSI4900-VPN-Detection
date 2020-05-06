@@ -347,28 +347,28 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
             print(f'{netflow_index} of {netflow_data.shape[0]}')
 
         # creating the src-dst ip tags used to identify the netflows in the dictionary
-        src_dest_ip_tag = f'{netflow_data.iloc[netflow_index, cfg.SRC_IP_COL]}-{netflow_data.iloc[netflow_index, cfg.DEST_IP_COL]}'
+        src_dest_ip_tag = f'{netflow_data.iloc[netflow_index, cfg.SRC_IP_COL_NUM]}-{netflow_data.iloc[netflow_index, cfg.DEST_IP_COL_NUM]}'
         # creating the reverse (dest-src) ip tags
-        dest_src_ip_tag = f'{netflow_data.iloc[netflow_index, cfg.DEST_IP_COL]}-{netflow_data.iloc[netflow_index, cfg.SRC_IP_COL]}'
+        dest_src_ip_tag = f'{netflow_data.iloc[netflow_index, cfg.DEST_IP_COL_NUM]}-{netflow_data.iloc[netflow_index, cfg.SRC_IP_COL_NUM]}'
 
         # If there already exist a rw_netflow object for the given src-dest tag in the RW dictionary
         if src_dest_ip_tag in netflow_dictionary:
             # adding the current netflow base features to the rw_netflow object
-            netflow_dictionary[src_dest_ip_tag].add_subsequent_flow_data(netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL],
+            netflow_dictionary[src_dest_ip_tag].add_subsequent_flow_data(netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM],
                                                                          netflow_data.iloc[
-                                                                             netflow_index, cfg.PACKET_LENGTH_COL],
+                                                                             netflow_index, cfg.PACKET_LENGTH_COL_NUM],
                                                                          netflow_data.iloc[
-                                                                             netflow_index, cfg.PACKET_COUNT_COL],
+                                                                             netflow_index, cfg.PACKET_COUNT_COL_NUM],
                                                                          netflow_index)
         # Otherwise creating a rw_netflow object (with the netflow base features) and adding it to the RW dictionary
         else:
-            netflow_dictionary[src_dest_ip_tag] = RW_NETFLOW(netflow_data.iloc[netflow_index, cfg.SRC_IP_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.SRC_PORT_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.DEST_IP_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.DEST_PORT_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.PACKET_COUNT_COL],
-                                                             netflow_data.iloc[netflow_index, cfg.PACKET_LENGTH_COL],
+            netflow_dictionary[src_dest_ip_tag] = RW_NETFLOW(netflow_data.iloc[netflow_index, cfg.SRC_IP_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.SRC_PORT_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.DEST_IP_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.DEST_PORT_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.PACKET_COUNT_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.PACKET_LENGTH_COL_NUM],
                                                              netflow_index)
 
         # calculating the connection based enhanced features
@@ -378,7 +378,7 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
         # calculating the time based enhanced features
         time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
             netflow_dictionary[src_dest_ip_tag].caulculate_flow_time_based_features(
-                netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL], time_rw_size)
+                netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
 
         # Determining if the reverse flow exist in the dictionary
 
@@ -393,7 +393,7 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
                                                                                              connection_rw_size)
             rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_len_ft_list, rev_time_pkt_num_ft_list = \
                 netflow_dictionary[dest_src_ip_tag].caulculate_flow_time_based_features(
-                    netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL], time_rw_size)
+                    netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
         else:
             # Otherwise, if there is no reverse flow, setting all the reverse flow features to 0
             rev_con_flow_count = [0]
@@ -414,17 +414,17 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
                                rev_time_pkt_len_ft_list]
         # list containing the base features
         base_features = [netflow_data.iloc[netflow_index, 0],
-                         netflow_data.iloc[netflow_index, cfg.SRC_IP_COL],
-                         netflow_data.iloc[netflow_index, cfg.SRC_PORT_COL],
-                         netflow_data.iloc[netflow_index, cfg.DEST_IP_COL],
-                         netflow_data.iloc[netflow_index, cfg.DEST_PORT_COL],
-                         netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL],
-                         netflow_data.iloc[netflow_index, cfg.PACKET_COUNT_COL],
-                         netflow_data.iloc[netflow_index, cfg.PACKET_LENGTH_COL]]
+                         netflow_data.iloc[netflow_index, cfg.SRC_IP_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.SRC_PORT_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.DEST_IP_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.DEST_PORT_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.PACKET_COUNT_COL_NUM],
+                         netflow_data.iloc[netflow_index, cfg.PACKET_LENGTH_COL_NUM]]
 
         # adding the base features, engineered features and VPN identifier to the enhanced features file.
         add_features_to_csv(target_csv_file, base_features, engineered_features,
-                            netflow_data.iloc[netflow_index, cfg.VPN_COL])
+                            netflow_data.iloc[netflow_index, cfg.VPN_COL_NUM])
 
     endtime = datetime.now()
     print(f' Totaltime: {endtime - start1}')
@@ -519,23 +519,9 @@ def extracted_feature_csv_creator(csv_file_name):
     """
     file = open(csv_file_name, 'w', newline='', encoding='utf-8')
     with file:
-        header = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen',
-                  'Con Flow count', 'Conn Timedelta Min', 'Conn Timedelta Max', 'Conn Timedelta Mean',
-                  'Conn Pkt Num Min', 'Conn Pkt Num Max', 'Conn Pkt Num Mean', 'Conn Pkt Num Tot',
-                  'Conn Pkt Len Min', 'Conn Pkt Len Min', 'Conn Pkt Len Mean', 'Conn Pkt Len Tot',
-                  'Conn-Rev Flow count', 'Conn-Rev Timedelta Min', 'Conn-Rev Timedelta Max', 'Conn-Rev Timedelta Mean',
-                  'Conn-Rev Pkt Num Min', 'Conn-Rev Pkt Num Max', 'Conn-Rev Pkt Num Mean', 'Conn-Rev Pkt Num Tot',
-                  'Conn-Rev Pkt Len Min', 'Conn-Rev Pkt Len Min', 'Conn-Rev Pkt Len Mean', 'Conn-Rev Pkt Len Tot',
-                  'Time Flow count', 'Time Timedelta Min', 'Time Timedelta Max', 'Time Timedelta Mean',
-                  'Time Pkt Num Min', 'Time Pkt Num Max', 'Time Pkt Num Mean', 'Time Pkt Num Tot',
-                  'Time Pkt Len Min', 'Time Pkt Len Min', 'Time Pkt Len Mean', 'Time Pkt Len Tot',
-                  'Time-Rev Flow count',
-                  'Time-Rev Timedelta Min', 'Time-Rev Timedelta Max', 'Time-Rev Timedelta Mean',
-                  'Time-Rev Pkt Num Min', 'Time-Rev Pkt Num Max', 'Time-Rev Pkt Num Mean', 'Time-Rev Pkt Num Tot',
-                  'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Mean', 'Time-Rev Pkt Len Tot', 'VPN'
-                  ]
+
         writer = csv.writer(file)
-        writer.writerow(header)
+        writer.writerow(cfg.ENG_FT_HEADER)
 
 
 if __name__ == '__main__':
