@@ -148,7 +148,7 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
     netflow_data = pd.read_csv(netflow_csv_file)
     netflow_data = netflow_data.astype(
         {'Src Port': np.uint16, 'Dst Port': np.uint16, 'Timestamp': np.datetime64, 'VPN': np.uint8})
-    for netflow_index in range(1, 50001):
+    for netflow_index in range(1, netflow_data.shape[0]):
         if netflow_index==10000:
             start2=datetime.now()
         if netflow_index==20000:
