@@ -1,5 +1,5 @@
 """
-Title: Data Prepossessing
+Title: Data Prepossessing Module
 
 Project: CSI4900 Honours Project
 
@@ -18,6 +18,7 @@ import pandas as pd
 import numpy as np
 import os
 from datetime import datetime
+import src.config as cfg
 
 
 def main():
@@ -35,51 +36,43 @@ def process_raw_data_set():
     """
     main_start_time = datetime.now()
 
-    raw_netflow_div = '../../data/raw/net_traffic_csv/'
-    filtered_netflow_csv_dir = '../../data/interim/filtered/'
-    cummlative_dir = '../../data/processed/'
-    cummulative_netflow_csv = "cummulative_netflows.csv"
 
     raw_netflow_list = []
-    for file in os.listdir(raw_netflow_div):
+    for file in os.listdir(cfg.RAW_NETFLOW_DIR):
         raw_netflow_list.append(file)
 
     filtered_netflows_list = []
-    for file in os.listdir(filtered_netflow_csv_dir):
-        filtered_netflows_list.append(filtered_netflow_csv_dir + file)
+    for file in os.listdir(cfg.FILTERED_NETFLOW_DIR):
+        filtered_netflows_list.append(cfg.FILTERED_NETFLOW_DIR + file)
 
-    """ The following elements of the raw netflow are to be transferred to the filtered data files. 
-    Although the generated netflows have significantly more elements, these elements were selected since
-    they are what an ISP would have access to in a netflow. 
-    """
-    header = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen', 'VPN']
+
 
     for raw_file in raw_netflow_list:
         filtered_filename = raw_file.replace('.csv', '_filtered.csv')
 
         # if there is no filtered version of the raw neflow
-        if filtered_netflow_csv_dir + filtered_filename not in filtered_netflows_list:
+        if cfg.FILTERED_NETFLOW_DIR + filtered_filename not in filtered_netflows_list:
 
             # create the csv file and transfer over the relevant data
-            create_filtered_csv(filtered_filename, filtered_netflow_csv_dir)
-            filter_raw_netflow_data(raw_netflow_div + raw_file, filtered_netflow_csv_dir, filtered_filename, header)
+            create_filtered_csv(filtered_filename, cfg.FILTERED_NETFLOW_DIR)
+            filter_raw_netflow_data(cfg.RAW_NETFLOW_DIR + raw_file, cfg.FILTERED_NETFLOW_DIR, filtered_filename, cfg.HEADER)
 
-            filtered_netflows_list.append(filtered_netflow_csv_dir + filtered_filename)
+            filtered_netflows_list.append(cfg.FILTERED_NETFLOW_DIR + filtered_filename)
         else:
             # otherwise if the file exist, verify that there is an equal number of rows between filtered and raw data
-            raw_data = pd.read_csv(raw_netflow_div + raw_file)
-            filtered_data = pd.read_csv(filtered_netflow_csv_dir + filtered_filename)
+            raw_data = pd.read_csv(cfg.RAW_NETFLOW_DIR + raw_file)
+            filtered_data = pd.read_csv(cfg.FILTERED_NETFLOW_DIR + filtered_filename)
 
             # in the event the two files do no have the same amount of data, simply recreate the filtered file
             if raw_data.shape[0] != filtered_data.shape[0]:
                 # print(f'Part of {raw_file} is missing')
-                create_filtered_csv(filtered_filename, filtered_netflow_csv_dir)
-                filter_raw_netflow_data(raw_netflow_div + raw_file, filtered_netflow_csv_dir, filtered_filename, header)
+                create_filtered_csv(filtered_filename, cfg.FILTERED_NETFLOW_DIR)
+                filter_raw_netflow_data(cfg.RAW_NETFLOW_DIR + raw_file, cfg.FILTERED_NETFLOW_DIR, filtered_filename, cfg.HEADER)
 
     print(datetime.now() - main_start_time)
     # create and populate the single consolidated csv file
-    create_filtered_csv(cummulative_netflow_csv, cummlative_dir)
-    merge_filtered_netflows(filtered_netflows_list, cummlative_dir + cummulative_netflow_csv)
+    create_filtered_csv( cfg.CONSOLIDATED_NETFLOW_DATA,"../")
+    merge_filtered_netflows(filtered_netflows_list,'../'+ cfg.CONSOLIDATED_NETFLOW_DATA)
     print(datetime.now() - main_start_time)
 
 
@@ -93,9 +86,8 @@ def create_filtered_csv(dest_file_name, dest_dir):
     """
     file = open(dest_dir + dest_file_name, 'w', newline='', encoding='utf-8')
     with file:
-        header = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen', 'VPN']
         writer = csv.writer(file)
-        writer.writerow(header)
+        writer.writerow(cfg.HEADER)
 
 
 def filter_raw_netflow_data(src_file, tgt_dir, tgt_filename, header_list):
