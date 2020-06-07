@@ -10,6 +10,16 @@ PACKET_COUNT_COL_NUM = 6
 PACKET_LENGTH_COL_NUM = 7
 VPN_COL_NUM=8
 
+INDEX_TUPL_NUM=0
+SRC_IP_TUPL_NUM = 2
+SRC_PORT_TUPL_NUM = 3
+DEST_IP_TUPL_NUM = 4
+DEST_PORT_TUPL_NUM = 5
+TIMESTAMP_TUPL_NUM = 6
+PACKET_COUNT_TUPL_NUM = 7
+PACKET_LENGTH_TUPL_NUM = 8
+VPN_TUPL_NUM=9
+
 SRC_IP= 'Src IP'
 SRC_PORT = 'Src Port'
 DEST_IP = 'Dst IP'
@@ -19,9 +29,13 @@ PACKET_COUNT = 'Tot Pkts'
 PACKET_LENGTH = 'TotLen'
 VPN_COL='VPN'
 
+DICT_FLOW_SRC_DEST_IP_TAG="src_dest_ip_tag"
+DICT_FLOW_DATA_VALUES='data_values'
 
 
-CONSOLIDATED_NETFLOW_DATA='../data/processed/cummulative_netflows.csv'
+
+
+CONSOLIDATED_NETFLOW_DATA='../../data/processed/cummulative_netflows.csv'
 RAW_NETFLOW_DIR='../../data/raw/net_traffic_csv/'
 FILTERED_NETFLOW_DIR = '../../data/interim/filtered/'
 
@@ -32,6 +46,7 @@ FILTERED_NETFLOW_DIR = '../../data/interim/filtered/'
     """
 
 HEADER=['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen', 'VPN']
+MODIFIED_HEADER=['Flow_ID', 'Src_IP', 'Src_Port', 'Dst_IP', 'Dst_Port', 'Timestamp', 'Tot_Pkts', 'TotLen', 'VPN']
 
 ENG_FT_HEADER = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen',
                   'Con Flow count', 'Conn Timedelta Min', 'Conn Timedelta Max', 'Conn Timedelta Mean',
@@ -48,3 +63,5 @@ ENG_FT_HEADER = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timesta
                   'Time-Rev Pkt Num Min', 'Time-Rev Pkt Num Max', 'Time-Rev Pkt Num Mean', 'Time-Rev Pkt Num Tot',
                   'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Mean', 'Time-Rev Pkt Len Tot', 'VPN'
                   ]
+
+TOTAL_NETFLOW_COUNT=215590

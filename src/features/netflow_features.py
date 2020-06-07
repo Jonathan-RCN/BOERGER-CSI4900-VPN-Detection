@@ -163,6 +163,7 @@ class RW_NETFLOW:
                 # since the characteristic list is maintained as oldest netflow first, as soon as a valid netflow is
                 # encountered, all remaining netflows sets are also valid.
                 else:
+                    self.connection_flow_count = 0
                     break
 
     def validate_time_flow_ttl(self, rw_time, curent_timestamp):
@@ -201,6 +202,7 @@ class RW_NETFLOW:
                 # since the characteristic list is maintained as oldest netflow first, as soon as a valid netflow is
                 # encountered, all remaining netflows sets are also valid.
                 else:
+                    self.connection_flow_count = 0
                     break
 
     def calculate_flow_connection_based_features(self, current_index, rw_size):
@@ -323,6 +325,8 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
     :param connection_rw_size: Size of connection based RW
     :param time_rw_size: Size of time based RW
     :return:
+
+    Benchmarked as taking 3.25hrs on laptop
     """
     start1 = datetime.now()
 
@@ -366,9 +370,9 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
                                                              netflow_data.iloc[netflow_index, cfg.SRC_PORT_COL_NUM],
                                                              netflow_data.iloc[netflow_index, cfg.DEST_IP_COL_NUM],
                                                              netflow_data.iloc[netflow_index, cfg.DEST_PORT_COL_NUM],
-                                                             netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM],
                                                              netflow_data.iloc[netflow_index, cfg.PACKET_COUNT_COL_NUM],
                                                              netflow_data.iloc[netflow_index, cfg.PACKET_LENGTH_COL_NUM],
+                                                             netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM],
                                                              netflow_index)
 
         # calculating the connection based enhanced features
