@@ -163,8 +163,9 @@ class RW_NETFLOW:
                 # since the characteristic list is maintained as oldest netflow first, as soon as a valid netflow is
                 # encountered, all remaining netflows sets are also valid.
                 else:
-                    self.connection_flow_count = 0
+                    # self.connection_flow_count = 0
                     break
+
 
     def validate_time_flow_ttl(self, rw_time, curent_timestamp):
         """
