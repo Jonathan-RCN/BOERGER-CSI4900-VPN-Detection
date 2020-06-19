@@ -47,17 +47,17 @@ MODIFIED_HEADER = ['Flow_ID', 'Src_IP', 'Src_Port', 'Dst_IP', 'Dst_Port', 'Times
 ENG_FT_HEADER = ['Flow ID', 'Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Timestamp', 'Tot Pkts', 'TotLen',
                  'Con Flow count', 'Conn Timedelta Min', 'Conn Timedelta Max', 'Conn Timedelta Mean',
                  'Conn Pkt Num Min', 'Conn Pkt Num Max', 'Conn Pkt Num Mean', 'Conn Pkt Num Tot',
-                 'Conn Pkt Len Min', 'Conn Pkt Len Min', 'Conn Pkt Len Mean', 'Conn Pkt Len Tot',
+                 'Conn Pkt Len Min', 'Conn Pkt Len Max', 'Conn Pkt Len Mean', 'Conn Pkt Len Tot',
                  'Conn-Rev Flow count', 'Conn-Rev Timedelta Min', 'Conn-Rev Timedelta Max', 'Conn-Rev Timedelta Mean',
                  'Conn-Rev Pkt Num Min', 'Conn-Rev Pkt Num Max', 'Conn-Rev Pkt Num Mean', 'Conn-Rev Pkt Num Tot',
-                 'Conn-Rev Pkt Len Min', 'Conn-Rev Pkt Len Min', 'Conn-Rev Pkt Len Mean', 'Conn-Rev Pkt Len Tot',
+                 'Conn-Rev Pkt Len Min', 'Conn-Rev Pkt Len Max', 'Conn-Rev Pkt Len Mean', 'Conn-Rev Pkt Len Tot',
                  'Time Flow count', 'Time Timedelta Min', 'Time Timedelta Max', 'Time Timedelta Mean',
                  'Time Pkt Num Min', 'Time Pkt Num Max', 'Time Pkt Num Mean', 'Time Pkt Num Tot',
-                 'Time Pkt Len Min', 'Time Pkt Len Min', 'Time Pkt Len Mean', 'Time Pkt Len Tot',
+                 'Time Pkt Len Min', 'Time Pkt Len Max', 'Time Pkt Len Mean', 'Time Pkt Len Tot',
                  'Time-Rev Flow count',
                  'Time-Rev Timedelta Min', 'Time-Rev Timedelta Max', 'Time-Rev Timedelta Mean',
                  'Time-Rev Pkt Num Min', 'Time-Rev Pkt Num Max', 'Time-Rev Pkt Num Mean', 'Time-Rev Pkt Num Tot',
-                 'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Mean', 'Time-Rev Pkt Len Tot', 'VPN'
+                 'Time-Rev Pkt Len Min', 'Time-Rev Pkt Len Max', 'Time-Rev Pkt Len Mean', 'Time-Rev Pkt Len Tot', 'VPN'
                  ]
 
 TOTAL_NETFLOW_COUNT = 215590

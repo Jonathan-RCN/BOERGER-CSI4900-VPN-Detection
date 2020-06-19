@@ -165,6 +165,8 @@ class RW_NETFLOW:
                 else:
                     # self.connection_flow_count = 0
                     break
+                # only consider netflows_objects that actually have values
+
 
 
     def validate_time_flow_ttl(self, rw_time, curent_timestamp):
@@ -203,7 +205,7 @@ class RW_NETFLOW:
                 # since the characteristic list is maintained as oldest netflow first, as soon as a valid netflow is
                 # encountered, all remaining netflows sets are also valid.
                 else:
-                    self.connection_flow_count = 0
+                    # self.connection_flow_count = 0
                     break
 
     def calculate_flow_connection_based_features(self, current_index, rw_size):
@@ -293,8 +295,8 @@ class RW_NETFLOW:
 
 
 def main():
-    connection_rw_size = cfg.CONNECTION_RW_SIZE
-    timw_rw_size_min = cfg.TIME_RW_SIZE
+    connection_rw_size = 5000
+    timw_rw_size_min = 5
 
     full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
     extracted_feature_csv_creator(full_feature_netflow_csv_file)

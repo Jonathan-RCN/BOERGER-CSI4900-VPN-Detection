@@ -291,10 +291,10 @@ class RW_NETFLOW:
 
 def main():
     start_time=datetime.now()
-    connection_rw_size = cfg.CONNECTION_RW_SIZE
-    timw_rw_size_min = cfg.TIME_RW_SIZE
+    connection_rw_size = 20000
+    timw_rw_size_min = 20
 
-    full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}_2.csv'
+    full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
     extracted_feature_csv_creator(full_feature_netflow_csv_file)
 
     netflow_feature_extraction(cfg.CONSOLIDATED_NETFLOW_DATA, full_feature_netflow_csv_file, connection_rw_size,

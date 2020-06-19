@@ -14,6 +14,7 @@ from sklearn.ensemble import RandomForestClassifier
 from src.multiscorer import MultiScorer
 from numpy import average
 from tqdm import tqdm
+from sklearn.svm import SVC
 
 def main():
     connection_rw_size = cfg.CONNECTION_RW_SIZE
@@ -37,15 +38,20 @@ def main():
     comb_fwd_ft, comb_fwd_ft_name = subset.get_comb_fwd_ft(features_csv)
     comb_bwd_ft, comb_bwd_ft_name = subset.get_comb_bwd_ft(features_csv)
 
-    # model_data, time_data = random_forest_classifyer(time_ft, label, random_state=42)
-    # start_time=datetime.now()
-    # model_general_results(model_data[0], model_data[1])
-    # print(datetime.now()-start_time)
-    # print('////////////////////////////////')
-    # start_time = datetime.now()
-    # print(get_model_general_results(model_data[0], model_data[1])[0])
-    # print(datetime.now() - start_time)
-    # print('////////////////////////////////')
+    model_data, time_data = svm_classifier(baseline_ft, label)
+    print(time_data)
+    print('////////////////////////////////')
+
+
+    start_time=datetime.now()
+    model_general_results(model_data[0], model_data[1])
+    print(datetime.now()-start_time)
+
+    print('////////////////////////////////')
+    start_time = datetime.now()
+    print(get_model_general_results(model_data[0], model_data[1])[0])
+    print(datetime.now() - start_time)
+    print('////////////////////////////////')
     # start_time = datetime.now()
     # model_cross_val_results(model_data[2],time_ft, label)
     # print(datetime.now() - start_time)
@@ -63,95 +69,9 @@ def main():
                        [comb_fwd_ft,'comb_fwd'],
                        [comb_bwd_ft,'comb_bwd']]
 
-    csv_header=['p','p_VPN', 'r', 'r_VPN', 'f1', 'f1_VPN', 'acc', 'auc', 'tp', 'tn', 'fp', 'fn']
-    tl = 'C:/Users/boerg/PycharmProjects/vpn_network_traffic_analyser/src/models'
-    cv_csv_header=['p_cv','p_VPN_cv', 'r_cv', 'r_VPN_cv', 'f1_cv', 'f1_VPN_cv', 'acc_cv', 'auc_cv']
 
 
-    for ft_sub in feature_subsets:
 
-        name=ft_sub[1]
-        print(f'/=========== {name} ===========\\ ')
-        rf_filename=f'/random_forest_metrics/default_param/rf_dp_{name}.csv'
-        gb_filename = f'/gradient_boost_metrics/default_param/gb_dp_{name}.csv'
-
-        if os.path.exists(tl+rf_filename):
-            print(f' {name} rf is already done')
-        else:
-            rf_feature_metrics_lits_cv=[]
-            t = tqdm(total=100)
-            for x in range(0, 100):
-                model_data, time_data = random_forest_classifyer(ft_sub[0], label)
-                rf_feature_metrics_lits_cv.append(get_model_general_results(model_data[0], model_data[1])[1])
-                t.update(1)
-            t.close()
-
-            file = open(tl+rf_filename, 'w', newline='', encoding='utf-8')
-            with file:
-                writer=csv.writer(file)
-                writer.writerow(csv_header)
-                for rf_entry in rf_feature_metrics_lits_cv:
-                    writer.writerow(rf_entry)
-        if os.path.exists(tl+gb_filename):
-            print(f' {name} gb is already done')
-
-        else:
-            gb_feature_metrics_lits_cv = []
-            t = tqdm(total=100)
-            for x in range(0, 100):
-                model_data, time_data = gradient_boost_classifier(ft_sub[0], label)
-                gb_feature_metrics_lits_cv.append(get_model_general_results(model_data[0], model_data[1])[1])
-                t.update(1)
-            t.close()
-
-            file = open(tl+gb_filename, 'w', newline='', encoding='utf-8')
-            with file:
-                writer = csv.writer(file)
-                writer.writerow(csv_header)
-                for gb_entry in gb_feature_metrics_lits_cv:
-                    writer.writerow(gb_entry)
-
-    for ft_sub in feature_subsets:
-        name = ft_sub[1]
-        print(f'/=========== {name}-CV ===========\\ ')
-
-        rf_filename = f'/random_forest_metrics/default_param_cross_val/rf_dp_cv_{name}.csv'
-        gb_filename = f'/gradient_boost_metrics/default_param_cross_val/gb_dp_cv_{name}.csv'
-
-        if os.path.exists(tl+rf_filename):
-            print(f' {name} gb is already done')
-        else:
-            rf_feature_metrics_lits_cv = []
-            t = tqdm(total=10)
-            for x in range(0, 10):
-                model_data, time_data = random_forest_classifyer(ft_sub[0], label)
-                rf_feature_metrics_lits_cv.append(get_model_cross_val_results(model_data[2], ft_sub[0], label)[1])
-                t.update(1)
-            t.close()
-
-            file = open(tl+rf_filename, 'w', newline='', encoding='utf-8')
-            with file:
-                writer = csv.writer(file)
-                writer.writerow(cv_csv_header)
-                for rf_entry in rf_feature_metrics_lits_cv:
-                    writer.writerow(rf_entry)
-        if os.path.exists(tl+gb_filename):
-            pass
-        else:
-            gb_feature_metrics_lits_cv = []
-            t = tqdm(total=10)
-            for x in range(0, 10):
-                model_data, time_data = gradient_boost_classifier(ft_sub[0], label)
-                gb_feature_metrics_lits_cv.append(get_model_cross_val_results(model_data[2], ft_sub[0],label)[1])
-                t.update(1)
-            t.close()
-
-            file = open(tl+gb_filename, 'w', newline='', encoding='utf-8')
-            with file:
-                writer = csv.writer(file)
-                writer.writerow(cv_csv_header)
-                for gb_entry in gb_feature_metrics_lits_cv:
-                    writer.writerow(gb_entry)
 
 
 
@@ -171,7 +91,7 @@ def main():
 def random_forest_classifyer(feature_data, label, test_size=0.3, random_state=None):  # todo: add hyperparameter
     x_train, x_test, y_train, y_test = train_test_split(
         feature_data, label, test_size=test_size, random_state=random_state)
-    random_forest_model = RandomForestClassifier(n_jobs=-1, random_state=random_state, n_estimators=100)
+    random_forest_model = RandomForestClassifier(n_jobs=-1, random_state=random_state)
     start_time = datetime.now()
     random_forest_model.fit(x_train, y_train)
     train_time = datetime.now() - start_time
@@ -199,6 +119,16 @@ def gradient_boost_classifier(feature_data, label, test_size=0.3, random_state=N
 def svm_classifier(feature_data, label, test_size=0.3, random_state=None):  # todo: add hyperparameter
     x_train, x_test, y_train, y_test = train_test_split(
         feature_data, label, test_size=test_size, random_state=random_state)
+    svm_model=SVC(random_state=random_state, kernel='sigmoid')
+    start_time = datetime.now()
+    svm_model.fit(x_train, y_train)
+    train_time = datetime.now() - start_time
+
+    start_time = datetime.now()
+    predictions = svm_model.predict(x_test)
+    predict_time = datetime.now() - start_time
+
+    return [predictions, y_test, svm_model], [predict_time, train_time]
 
 
 def model_general_results(predictions, y_test):
@@ -291,15 +221,15 @@ def get_model_cross_val_results(model, ft_data, label):
 
             model_cross_val_metrics_list.append(average(results[metric]))
 
-        model_cross_val_metrics_string = ""
-        for ele in model_cross_val_metrics_list:
-            model_cross_val_metrics_string += f', {str(ele)}'
-        model_cross_val_metrics_string = model_cross_val_metrics_string[2:]
+    model_cross_val_metrics_string = ""
+    for ele in model_cross_val_metrics_list:
+        model_cross_val_metrics_string += f', {str(ele)}'
+    model_cross_val_metrics_string = model_cross_val_metrics_string[2:]
 
-        return model_cross_val_metrics_string, model_cross_val_metrics_list
+    return model_cross_val_metrics_string, model_cross_val_metrics_list
 
 
-# todo: return data from cv evaluation scores (mean)
+
 
 
 if __name__ == '__main__':
