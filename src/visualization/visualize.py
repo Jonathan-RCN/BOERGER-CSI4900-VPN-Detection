@@ -5,6 +5,8 @@ import seaborn as sns
 import pandas as pd
 from sklearn.metrics import plot_confusion_matrix
 import scikitplot as skplt
+
+
 from src.models.train_model import random_forest_classifyer_tuned,gradient_boost_classifier_tuned ,gradient_boost_classifier_default, random_forest_classifyer_default
 import src.config as cfg
 import src.feature_subsets as subset
@@ -44,41 +46,55 @@ def main():
                        [comb_fwd_ft, 'Combined Forward'],
                        [comb_bwd_ft, 'Combined Backwards']]
 
-    for ft_set in feature_subsets:
-        print(f'  ///////////  {ft_set[1]} ///////////')
-        print('Starting default model')
-        model_info_default, time_info_default = random_forest_classifyer_default(ft_set[0], label, random_state=random_state)
-        print('Starting tuned model')
-        model_info_tuned, time_info_tuned = random_forest_classifyer_tuned(ft_set[0], label, random_state=random_state)
-        print('Starting confusion matrix')
-        plot_cf_matrix(model_info_default[2], model_info_default[4], model_info_default[1],
-                       f'Confusion Matrix:: Random Forest - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        plot_cf_matrix(model_info_tuned[2], model_info_tuned[4], model_info_tuned[1],
-                       f'Confusion Matrix:: Random Forest - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        print('Starting ROC curve')
-        plot_ROC_curve(model_info_default[1],model_info_default[3],
-                       f'ROC Curve:: Random Forest - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        plot_ROC_curve(model_info_tuned[1], model_info_tuned[3],
-                       f'ROC Curve:: Random Forest - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    # for ft_set in feature_subsets:
+    #     print(f'  ///////////  {ft_set[1]} ///////////')
+    #     print('Starting default model')
+    #     model_info_default, time_info_default = random_forest_classifyer_default(ft_set[0], label, random_state=random_state)
+    #     print('Starting tuned model')
+    #     model_info_tuned, time_info_tuned = random_forest_classifyer_tuned(ft_set[0], label, random_state=random_state)
+    #     print('Starting confusion matrix')
+    #     plot_cf_matrix(model_info_default[2], model_info_default[4], model_info_default[1],
+    #                    f'Confusion Matrix:: Random Forest - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     plot_cf_matrix(model_info_tuned[2], model_info_tuned[4], model_info_tuned[1],
+    #                    f'Confusion Matrix:: Random Forest - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     print('Starting ROC curve')
+    #     plot_ROC_curve(model_info_default[1],model_info_default[3],
+    #                    f'ROC Curve:: Random Forest - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     plot_ROC_curve(model_info_tuned[1], model_info_tuned[3],
+    #                    f'ROC Curve:: Random Forest - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #
+    # for ft_set in feature_subsets:
+    #     print(f'  ///////////  {ft_set[1]} ///////////')
+    #     print('Starting default model')
+    #     model_info_default, time_info_default = gradient_boost_classifier_default(ft_set[0], label,
+    #                                                                              random_state=random_state)
+    #     print('Starting tuned model')
+    #     model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(ft_set[0], label, random_state=random_state)
+    #     print('Starting confusion matrix')
+    #     plot_cf_matrix(model_info_default[2], model_info_default[4], model_info_default[1],
+    #                    f'Confusion Matrix:: Gradient Boost - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     plot_cf_matrix(model_info_tuned[2], model_info_tuned[4], model_info_tuned[1],
+    #                    f'Confusion Matrix:: Gradient Boost - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     print('Starting ROC curve')
+    #     plot_ROC_curve(model_info_default[1], model_info_default[3],
+    #                    f'ROC Curve:: Gradient Boost - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
+    #     plot_ROC_curve(model_info_tuned[1], model_info_tuned[3],
+    #                    f'ROC Curve:: Gradient Boost - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
 
-    for ft_set in feature_subsets:
-        print(f'  ///////////  {ft_set[1]} ///////////')
-        print('Starting default model')
-        model_info_default, time_info_default = gradient_boost_classifier_default(ft_set[0], label,
-                                                                                 random_state=random_state)
-        print('Starting tuned model')
-        model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(ft_set[0], label, random_state=random_state)
-        print('Starting confusion matrix')
-        plot_cf_matrix(model_info_default[2], model_info_default[4], model_info_default[1],
-                       f'Confusion Matrix:: Gradient Boost - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        plot_cf_matrix(model_info_tuned[2], model_info_tuned[4], model_info_tuned[1],
-                       f'Confusion Matrix:: Gradient Boost - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        print('Starting ROC curve')
-        plot_ROC_curve(model_info_default[1], model_info_default[3],
-                       f'ROC Curve:: Gradient Boost - {ft_set[1]} Features - Default Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
-        plot_ROC_curve(model_info_tuned[1], model_info_tuned[3],
-                       f'ROC Curve:: Gradient Boost - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
 
+    model_info_default, time_info_default = random_forest_classifyer_default(baseline_ft, label,
+                                                                             random_state=random_state)
+
+    feature_importance_v2(model_info_default[2], baselone_ft_name, 'Random Forest - Baseline - Default Parameters - Feature Importance')
+
+    model_info_default, time_info_default = random_forest_classifyer_default(conn_ft, label,
+                                                                             random_state=random_state)
+    feature_importance_v2(model_info_default[2], conn_ft_name,
+                       'Random Forest - Conn - Default Parameters - Feature Importance')
+    model_info_default, time_info_default = random_forest_classifyer_default(comb_fwd_ft, label,
+                                                                             random_state=random_state)
+    feature_importance_v2(model_info_default[2], comb_fwd_ft_name,
+                       'Random Forest - Comb Fwd - Default Parameters - Feature Importance')
 
 
 
@@ -123,6 +139,27 @@ def random_forest_single_tree(ft_name, rf_model, target_filename):
                    filled=True)
     fig.savefig(f'{target_filename}.png')
     plt.show()
+
+def feature_importance(model, ft_names, title, x_test):
+    # adapted from https://chrisalbon.com/machine_learning/trees_and_forests/feature_importance/
+    importances = model.feature_importances_
+    indices = np.argsort(importances)[::-1]
+    names = [ft_names for i in indices]
+    plt.figure()
+    plt.title(title)
+    plt.bar(range(x_test.shape[1]), importances[indices])
+    plt.xticks(range(x_test.shape[1]), names, rotation=45)
+
+def feature_importance_v2(model, ft_names, title):
+
+    df_feature_importance = pd.DataFrame(model.feature_importances_, index=ft_names,
+                                         columns=['feature importance']).sort_values('feature importance',
+                                                                                     ascending=False)
+    df_feature_importance.plot(kind='bar', figsize=(8,4.5), title=title)
+    plt.tight_layout()
+    plt.savefig(f'{title}.png')
+    plt.show()
+
 
 if __name__ == '__main__':
     main()
