@@ -32,7 +32,7 @@ VPN_COL = 'VPN'
 DICT_FLOW_SRC_DEST_IP_TAG = "src_dest_ip_tag"
 DICT_FLOW_DATA_VALUES = 'data_values'
 
-CONSOLIDATED_NETFLOW_DATA = '../../data/processed/cummulative_netflows.csv'
+CONSOLIDATED_NETFLOW_DATA = '../data/processed/cummulative_netflows.csv'
 RAW_NETFLOW_DIR = '../../data/raw/net_traffic_csv/'
 FILTERED_NETFLOW_DIR = '../../data/interim/filtered/'
 

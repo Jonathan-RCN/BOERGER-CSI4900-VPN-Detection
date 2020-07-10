@@ -152,56 +152,56 @@ def merge_filtered_netflows(list_of_files, consolidated_csv_filename):
     consolidated_netflows.to_csv(consolidated_csv_filename, index=False, encoding="utf-8")
 
 
-def transfer_netflow_data(src_data, columns_to_keep, file_name, dest_dir_filename, header):
-    """
-    Depricated due to inneficiency, functionaly replaced by filter_raw_netflow
-
-    :param src_data:
-    :param columns_to_keep:
-    :param file_name:
-    :param dest_dir_filename:
-    :param header:
-    :return:
-    """
-    filtered_data = pd.read_csv(dest_dir_filename)
-    time_check = datetime.now()
-    start_time = datetime.now()
-    cummulative_append = []
-    for x in range(0, src_data.shape[0]):
-        if (x % 1000) == 0:
-            print(
-                f'{x} of {src_data.shape[0]} || {datetime.now()}|| Time since last TC: {datetime.now() - time_check}|| Time since start: {datetime.now() - start_time}')
-            time_check = datetime.now()
-        row_to_append = []
-
-        for y in range(0, len(header)):
-            if header[y] == "VPN":
-                if file_name.startswith("vpn"):
-                    row_to_append.append(np.uint8(1))
-                else:
-                    row_to_append.append(np.uint8(0))
-
-            elif header[y] == "Timestamp":
-                time_data = src_data.loc[x, columns_to_keep[y]]
-                time_data_2 = pd.Timestamp(time_data)
-                row_to_append.append(time_data_2)
-            elif header[y] == 'Src Port' or header[y] == 'Dst Port':
-                port_data = src_data.loc[x, columns_to_keep[y]]
-                row_to_append.append(np.uint16(port_data))
-            elif header[y] == 'Tot Pkts':
-                pck_count = src_data.loc[x, "Tot Fwd Pkts"] + src_data.loc[x, "Tot Bwd Pkts"]
-                row_to_append.append(pck_count)
-            elif header[y] == 'TotLen':
-                tot_len = src_data.loc[x, "TotLen Fwd Pkts"] + src_data.loc[x, "TotLen Bwd Pkts"]
-                row_to_append.append(tot_len)
-
-            else:
-                row_to_append.append(src_data.loc[x, columns_to_keep[y]])
-
-        filtered_data.loc[x] = row_to_append
-        cummulative_append.append(row_to_append)
-
-    filtered_data.to_csv(dest_dir_filename, index=False)
+# def transfer_netflow_data(src_data, columns_to_keep, file_name, dest_dir_filename, header):
+#     """
+#     Depricated due to inneficiency, functionaly replaced by filter_raw_netflow
+#
+#     :param src_data:
+#     :param columns_to_keep:
+#     :param file_name:
+#     :param dest_dir_filename:
+#     :param header:
+#     :return:
+#     """
+#     filtered_data = pd.read_csv(dest_dir_filename)
+#     time_check = datetime.now()
+#     start_time = datetime.now()
+#     cummulative_append = []
+#     for x in range(0, src_data.shape[0]):
+#         if (x % 1000) == 0:
+#             print(
+#                 f'{x} of {src_data.shape[0]} || {datetime.now()}|| Time since last TC: {datetime.now() - time_check}|| Time since start: {datetime.now() - start_time}')
+#             time_check = datetime.now()
+#         row_to_append = []
+#
+#         for y in range(0, len(header)):
+#             if header[y] == "VPN":
+#                 if file_name.startswith("vpn"):
+#                     row_to_append.append(np.uint8(1))
+#                 else:
+#                     row_to_append.append(np.uint8(0))
+#
+#             elif header[y] == "Timestamp":
+#                 time_data = src_data.loc[x, columns_to_keep[y]]
+#                 time_data_2 = pd.Timestamp(time_data)
+#                 row_to_append.append(time_data_2)
+#             elif header[y] == 'Src Port' or header[y] == 'Dst Port':
+#                 port_data = src_data.loc[x, columns_to_keep[y]]
+#                 row_to_append.append(np.uint16(port_data))
+#             elif header[y] == 'Tot Pkts':
+#                 pck_count = src_data.loc[x, "Tot Fwd Pkts"] + src_data.loc[x, "Tot Bwd Pkts"]
+#                 row_to_append.append(pck_count)
+#             elif header[y] == 'TotLen':
+#                 tot_len = src_data.loc[x, "TotLen Fwd Pkts"] + src_data.loc[x, "TotLen Bwd Pkts"]
+#                 row_to_append.append(tot_len)
+#
+#             else:
+#                 row_to_append.append(src_data.loc[x, columns_to_keep[y]])
+#
+#         filtered_data.loc[x] = row_to_append
+#         cummulative_append.append(row_to_append)
+#
+#     filtered_data.to_csv(dest_dir_filename, index=False)
 
 
 if __name__ == '__main__':

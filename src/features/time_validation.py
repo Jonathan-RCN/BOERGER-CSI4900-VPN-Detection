@@ -89,9 +89,7 @@ class RW_NETFLOW:
         :param ttl_list: The file index which corresponds to the netflow
         """
         self.src_ip = src_ip
-        self.src_port = src_port
         self.dest_ip = dest_ip
-        self.dest_port = dest_port
         self.connection_packet_count_list = [packet_count_list]
         self.connection_packet_length_list = [packet_length_list]
         self.connection_timestamp_list = [pd.Timestamp(timestamp_list)]
@@ -251,20 +249,24 @@ class RW_NETFLOW:
         """
         This methods prints the connection based characteristics of the rw_netflow object.
         """
-        print(f' Src IP/Port: {self.src_ip}/{self.src_port}')
-        print(f' Dest IP/Port: {self.dest_ip}/{self.dest_port}')
+        print('\n')
+        print('RW_NETFLOW Connection Attributes')
+        # print('\n')
+        print(f' Src IP: {self.src_ip}')
+        print(f' Dest IP: {self.dest_ip}')
         print(f' Flow count in the RW: {self.connection_flow_count}')
         print(f' The data TTL values: {self.connection_ttl_list}')
         print(f' The timestamp list: {self.connection_timestamp_list}')
         print(f' The packet count list: {self.connection_packet_count_list}')
         print(f' The packet length list: {self.connection_packet_length_list}')
+        print('\n')
 
     def print_time_netflow(self):
         """
         This methods prints the time based characteristics of the rw_netflow object.
         """
-        print(f' Src IP/Port: {self.src_ip}/{self.src_port}')
-        print(f' Dest IP/Port: {self.dest_ip}/{self.dest_port}')
+        print(f' Src IP: {self.src_ip}')
+        print(f' Dest IP: {self.dest_ip}')
         print(f' Flow count in the RW: {self.time_flow_count}')
         print(f' The data TTL values: {self.time_ttl_list}')
         print(f' The timestamp list: {self.time_timestamp_list}')
@@ -275,8 +277,8 @@ class RW_NETFLOW:
         """
         This methods prints all characteristics of the rw_netflow object.
         """
-        print(f' Src IP/Port: {self.src_ip}/{self.src_port}')
-        print(f' Dest IP/Port: {self.dest_ip}/{self.dest_port}')
+        print(f' Src IP: {self.src_ip}')
+        print(f' Dest IP: {self.dest_ip}')
         print(f' Flow count in the RW: [Con]>> {self.connection_flow_count} '
               f'|| [Time]>> {self.time_flow_count}')
         print(f' The data TTL values: [Con]>> {self.connection_ttl_list} '
@@ -291,8 +293,8 @@ class RW_NETFLOW:
 
 def main():
     start_time=datetime.now()
-    connection_rw_size = 20000
-    timw_rw_size_min = 20
+    connection_rw_size = 500
+    timw_rw_size_min = 0.5
 
     full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
     extracted_feature_csv_creator(full_feature_netflow_csv_file)
@@ -331,12 +333,12 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
 
     # the list of active (i.e. relevant netflows) is maintained through the use of a dictionary.
     netflow_dictionary = {}
-    netflow_data = pd.read_csv(netflow_csv_file)
+    netflow_data = pd.read_csv('../'+netflow_csv_file)
     # given the large size of the feature sets, when reading the base netflow list, specifiying the data types to
     # increase memory efficiency.
     netflow_data = netflow_data.astype(
         {'Src Port': np.uint16, 'Dst Port': np.uint16, 'Timestamp': np.datetime64, 'VPN': np.uint8})
-    for netflow_index in range(1, netflow_data.shape[0]):
+    for netflow_index in range(1, 1000):
         if netflow_index == 10000:
             start2 = datetime.now()
         if netflow_index == 20000:
@@ -380,6 +382,9 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
         con_flow_count, con_timedelta_ft_list, con_pkt_len_ft_list, con_pkt_num_ft_list = \
             netflow_dictionary[src_dest_ip_tag].calculate_flow_connection_based_features(netflow_index,
                                                                                          connection_rw_size)
+        # print(con_flow_count, con_timedelta_ft_list, con_pkt_len_ft_list, con_pkt_num_ft_list)
+        # print('\n')
+
         # calculating the time based enhanced features
         time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
             netflow_dictionary[src_dest_ip_tag].caulculate_flow_time_based_features(
@@ -417,6 +422,8 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
                                time_flow_count, time_timedelta_ft_list, time_pkt_num_ft_list, time_pkt_len_ft_list,
                                rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_num_ft_list,
                                rev_time_pkt_len_ft_list]
+
+        #
         # list containing the base features
         base_features = [netflow_data.iloc[netflow_index, 0],
                          netflow_data.iloc[netflow_index, cfg.SRC_IP_COL_NUM],
@@ -432,13 +439,18 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
                             netflow_data.iloc[netflow_index, cfg.VPN_COL_NUM])
 
     endtime = datetime.now()
-    print(f' Totaltime: {endtime - start1}')
-    print(f' First 10000: {start2 - start1}')
-    print(f'  10k- 20k: {start3 - start2}')
-    print(f' 20k -30k: {start4 - start3}')
-    print(f' 30k -40k: {start5 - start4}')
-    print(f' 40k -50k: {endtime - start5}')
+    # print(f' Totaltime: {endtime - start1}')
+    # print(f' First 10000: {start2 - start1}')
+    # print(f'  10k- 20k: {start3 - start2}')
+    # print(f' 20k -30k: {start4 - start3}')
+    # print(f' 30k -40k: {start5 - start4}')
+    # print(f' 40k -50k: {endtime - start5}')
     # print(f' 10k -30k: {endtime - start2}')
+    import pprint
+    pprint.pprint(netflow_dictionary)
+
+    print('\n')
+    netflow_dictionary['131.202.240.150-74.125.226.1'].print_connection_netflow()
 
 
 def add_features_to_csv(csv_filename, base_features, engineered_features, vpn_status):
