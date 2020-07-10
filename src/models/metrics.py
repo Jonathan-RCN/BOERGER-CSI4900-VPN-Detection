@@ -18,7 +18,7 @@ def main():
     connection_rw_size = cfg.CONNECTION_RW_SIZE
     timw_rw_size_min = cfg.TIME_RW_SIZE
 
-    features_csv = f'../../data/processed/full_ft_netflow_crw_{10000}_trw_{10}.csv'
+    features_csv = f'../../data/processed/full_ft_netflow_crw_{5000}_trw_{5}.csv'
 
     label = subset.get_target(features_csv)
 
@@ -51,6 +51,13 @@ def main():
                        [comb_fwd_ft,'comb_fwd'],
                        [comb_bwd_ft,'comb_bwd']]
 
+    rw_size_set =[[1000,1],
+             [2000,2],
+             [5000,5],
+             [10000,10],
+             [15000,15],
+             [20000,20]]
+
     metric_list_list=[]
     # for ft_set in feature_subsets:
     #     print(f' ////////////// {ft_set[1]}  ////////////// ')
@@ -70,30 +77,141 @@ def main():
     #     print('\n')
     #     print(metric_list_list)
     #     print('\n')
-    for ft_set in feature_subsets:
-        print(f' ////////////// {ft_set[1]}  ////////////// ')
-        print('Starting default model')
+    # for ft_set in feature_subsets:
+    #     print(f' ////////////// {ft_set[1]}  ////////////// ')
+    #     print('Starting default model')
+    #
+    #     model_info_default, time_info_default = gradient_boost_classifier_default(ft_set[0], label,
+    #                                                                              random_state=42)
+    #     print('Starting tuned model')
+    #     model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(ft_set[0], label, random_state=42)
+    #     print('Calculating default metrics')
+    #     metric_list_list.append(get_model_general_results(model_info_default[0], model_info_default[1], model_info_default[3], f'GB - DF - {ft_set[1]} - RW {connection_rw_size}/{timw_rw_size_min}'))
+    #     print('Calculating tuned metrics')
+    #     metric_list_list.append(
+    #         get_model_general_results(model_info_tuned[0], model_info_tuned[1], model_info_tuned[3],
+    #                                   f'GB - Tuned - {ft_set[1]} - RW {connection_rw_size}/{timw_rw_size_min}'))
+    #     file = open(os.getcwd() + 'metric_list.csv', 'w', newline='', encoding='utf-8')
+    #     print('\n')
+    #     print(metric_list_list)
+    #     print('\n')
 
-        model_info_default, time_info_default = gradient_boost_classifier_default(ft_set[0], label,
-                                                                                 random_state=42)
-        print('Starting tuned model')
-        model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(ft_set[0], label, random_state=42)
-        print('Calculating default metrics')
-        metric_list_list.append(get_model_general_results(model_info_default[0], model_info_default[1], model_info_default[3], f'GB - DF - {ft_set[1]} - RW {connection_rw_size}/{timw_rw_size_min}'))
-        print('Calculating tuned metrics')
-        metric_list_list.append(
-            get_model_general_results(model_info_tuned[0], model_info_tuned[1], model_info_tuned[3],
-                                      f'GB - Tuned - {ft_set[1]} - RW {connection_rw_size}/{timw_rw_size_min}'))
-        file = open(os.getcwd() + 'metric_list.csv', 'w', newline='', encoding='utf-8')
-        print('\n')
-        print(metric_list_list)
-        print('\n')
+    # for rw_size in rw_size_set:
+    #     print(f' ////////////// {rw_size}  ////////////// ')
+    #
+    #     features_csv = f'../../data/processed/full_ft_netflow_crw_{rw_size[0]}_trw_{rw_size[1]}.csv'
+    #     label = subset.get_target(features_csv)
+    #     conn_ft, conn_ft_name = subset.get_conn_ft(features_csv)
+    #     print('Trainning model')
+    #     model_info_tuned, time_info_tuned = random_forest_classifyer_tuned(conn_ft, label, random_state=42)
+    #     print('Generating metrics')
+    #     metric_list_list.append(
+    #                 get_model_general_results(model_info_tuned[0], model_info_tuned[1], model_info_tuned[3],
+    #                                           f'RF - Tuned - CONN - RW {rw_size[0]}/{rw_size[1]}'))
+    # for rw_size in rw_size_set:
+    #     print(f' ////////////// {rw_size}  ////////////// ')
+    #
+    #     features_csv = f'../../data/processed/full_ft_netflow_crw_{rw_size[0]}_trw_{rw_size[1]}.csv'
+    #     label = subset.get_target(features_csv)
+    #     conn_ft, conn_ft_name = subset.get_conn_ft(features_csv)
+    #     print('Trainning model')
+    #     model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(conn_ft, label, random_state=42)
+    #     print('Generating metrics')
+    #     metric_list_list.append(
+    #                 get_model_general_results(model_info_tuned[0], model_info_tuned[1], model_info_tuned[3],
+    #                                           f'GB - Tuned - CONN - RW {rw_size[0]}/{rw_size[1]}'))
+    #
+    #
+    # file = open(f'{os.getcwd()}/metric_list.csv', 'a', newline='', encoding='utf-8')
+    # with file:
+    #     writer=csv.writer(file)
+    #     for rf_entry in metric_list_list:
+    #         writer.writerow(rf_entry)
+    print(f'GB Tuned || {datetime.now()}')
+    model_info, time_info_tuned = gradient_boost_classifier_tuned(conn_fwd_ft, label, random_state=42)
+    gb_tuned = model_info[2]
+    print(f'GB Def || {datetime.now()}')
+    model_info, time_info_tuned = gradient_boost_classifier_default(conn_fwd_ft, label, random_state=42)
+    gb_def = model_info[2]
+    print(f'RF Tuned || {datetime.now()}')
+    model_info, time_info_tuned = random_forest_classifyer_tuned(conn_fwd_ft, label, random_state=42)
+    rf_tuned = model_info[2]
+    print(f'RF Def || {datetime.now()}')
+    model_info, time_info_tuned = random_forest_classifyer_default(conn_fwd_ft, label, random_state=42)
+    rf_def = model_info[2]
 
-    file = open(f'{os.getcwd()}/metric_list.csv', 'w', newline='', encoding='utf-8')
-    with file:
-        writer=csv.writer(file)
-        for rf_entry in metric_list_list:
-            writer.writerow(rf_entry)
+
+    time_gb_tuned=[]
+    time_gb_def = []
+    time_rf_tuned = []
+    time_rf_def = []
+    for x in range(0, 10):
+        print(f'Iteration: {x} || {datetime.now()}')
+        time_start=datetime.now()
+        gb_tuned.predict(conn_fwd_ft)
+        end_time=datetime.now()-time_start
+        time_gb_tuned.append(end_time.total_seconds())
+
+        time_start = datetime.now()
+        gb_def.predict(conn_fwd_ft)
+        end_time = datetime.now() - time_start
+        time_gb_def.append(end_time.total_seconds())
+
+        time_start = datetime.now()
+        rf_tuned.predict(conn_fwd_ft)
+        end_time = datetime.now() - time_start
+        time_rf_tuned.append(end_time.total_seconds())
+
+        time_start = datetime.now()
+        rf_def.predict(conn_fwd_ft)
+        end_time = datetime.now() - time_start
+        time_rf_def.append(end_time.total_seconds())
+
+    print(f' GB tuned: {sum(time_gb_tuned)/10} || {time_gb_tuned}')
+    print(f' GB def: {sum(time_gb_def)/10} || {time_gb_def}')
+    print(f' RF tuned: {sum(time_rf_tuned)/10} || {time_rf_tuned}')
+    print(f' RF def: {sum(time_rf_def)/10} || {time_rf_def}')
+
+
+    gb_tune_pred= gb_tuned.predict(conn_fwd_ft)
+    gb_def_pred = gb_def.predict(conn_fwd_ft)
+    rf_tune_pred = rf_tuned.predict(conn_fwd_ft)
+    rf_def_pred = rf_def.predict(conn_fwd_ft)
+
+
+
+    print('GB Tuned Results')
+    model_general_results(gb_tune_pred, label)
+    print('GB Tuned Results CV')
+    get_model_cross_val_results(gb_tuned, conn_fwd_ft, label)
+    print('GB Def Results')
+    model_general_results(gb_def_pred, label)
+    print('RF Tuned Results')
+    model_general_results(rf_tune_pred, label)
+    print('RF Tuned Results CV')
+    get_model_cross_val_results(rf_tuned, conn_fwd_ft, label)
+    print('RF Def Results')
+    model_general_results(rf_def_pred, label)
+    print('RF Def Results CV')
+    get_model_cross_val_results(rf_def, conn_fwd_ft, label)
+
+
+
+    import src.visualization as vis
+
+
+    # vis.plot_cf_matrix(gb_tuned, conn_ft, label, 'GB Tuned')
+    # vis.plot_cf_matrix(gb_def, conn_ft, label, 'GB def')
+    # vis.plot_cf_matrix(rf_tuned, conn_ft, label, 'RF Tuned')
+    # vis.plot_cf_matrix(rf_def, conn_ft, label, 'RF Def')
+
+
+
+
+
+
+
+
 
 
 def model_general_results(predictions, y_test):

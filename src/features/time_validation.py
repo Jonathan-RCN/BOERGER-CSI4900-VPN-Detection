@@ -293,10 +293,10 @@ class RW_NETFLOW:
 
 def main():
     start_time=datetime.now()
-    connection_rw_size = 500
-    timw_rw_size_min = 0.5
+    connection_rw_size = 5000
+    timw_rw_size_min = 0
 
-    full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
+    full_feature_netflow_csv_file = f'../../data/processed/stream_line_test.csv'
     extracted_feature_csv_creator(full_feature_netflow_csv_file)
 
     netflow_feature_extraction(cfg.CONSOLIDATED_NETFLOW_DATA, full_feature_netflow_csv_file, connection_rw_size,
@@ -338,7 +338,7 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
     # increase memory efficiency.
     netflow_data = netflow_data.astype(
         {'Src Port': np.uint16, 'Dst Port': np.uint16, 'Timestamp': np.datetime64, 'VPN': np.uint8})
-    for netflow_index in range(1, 1000):
+    for netflow_index in range(1, netflow_data.shape[0]):
         if netflow_index == 10000:
             start2 = datetime.now()
         if netflow_index == 20000:
@@ -382,13 +382,12 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
         con_flow_count, con_timedelta_ft_list, con_pkt_len_ft_list, con_pkt_num_ft_list = \
             netflow_dictionary[src_dest_ip_tag].calculate_flow_connection_based_features(netflow_index,
                                                                                          connection_rw_size)
-        # print(con_flow_count, con_timedelta_ft_list, con_pkt_len_ft_list, con_pkt_num_ft_list)
-        # print('\n')
+
 
         # calculating the time based enhanced features
-        time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
-            netflow_dictionary[src_dest_ip_tag].caulculate_flow_time_based_features(
-                netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
+        # time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
+        #     netflow_dictionary[src_dest_ip_tag].caulculate_flow_time_based_features(
+        #         netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
 
         # Determining if the reverse flow exist in the dictionary
 
@@ -396,32 +395,33 @@ def netflow_feature_extraction(netflow_csv_file, target_csv_file, connection_rw_
         # dest-src ip tag of the given flow). Therefore, there is no need to track reverse flow base characteristics
         # (since the are already being accounted for) and thus only the enhanced feature values are extracted from
         # the reverse flow.
-        if dest_src_ip_tag in netflow_dictionary:
-            # if yes, calculating the reverse flow enhanced feature sets (connection and time)
-            rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_len_ft_list, rev_con_pkt_num_ft_list = \
-                netflow_dictionary[dest_src_ip_tag].calculate_flow_connection_based_features(netflow_index,
-                                                                                             connection_rw_size)
-            rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_len_ft_list, rev_time_pkt_num_ft_list = \
-                netflow_dictionary[dest_src_ip_tag].caulculate_flow_time_based_features(
-                    netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
-        else:
-            # Otherwise, if there is no reverse flow, setting all the reverse flow features to 0
-            rev_con_flow_count = [0]
-            rev_con_timedelta_ft_list = [0, 0, 0]
-            rev_con_pkt_len_ft_list = [0, 0, 0, 0]
-            rev_con_pkt_num_ft_list = [0, 0, 0, 0]
-            rev_time_flow_count = [0]
-            rev_time_timedelta_ft_list = [0, 0, 0]
-            rev_time_pkt_len_ft_list = [0, 0, 0, 0]
-            rev_time_pkt_num_ft_list = [0, 0, 0, 0]
+        # if dest_src_ip_tag in netflow_dictionary:
+        #     # if yes, calculating the reverse flow enhanced feature sets (connection and time)
+        #     rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_len_ft_list, rev_con_pkt_num_ft_list = \
+        #         netflow_dictionary[dest_src_ip_tag].calculate_flow_connection_based_features(netflow_index,
+        #                                                                                      connection_rw_size)
+        #     rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_len_ft_list, rev_time_pkt_num_ft_list = \
+        #         netflow_dictionary[dest_src_ip_tag].caulculate_flow_time_based_features(
+        #             netflow_data.iloc[netflow_index, cfg.TIMESTAMP_COL_NUM], time_rw_size)
+        # else:
+        #     # Otherwise, if there is no reverse flow, setting all the reverse flow features to 0
+        #     rev_con_flow_count = [0]
+        #     rev_con_timedelta_ft_list = [0, 0, 0]
+        #     rev_con_pkt_len_ft_list = [0, 0, 0, 0]
+        #     rev_con_pkt_num_ft_list = [0, 0, 0, 0]
+        #     rev_time_flow_count = [0]
+        #     rev_time_timedelta_ft_list = [0, 0, 0]
+        #     rev_time_pkt_len_ft_list = [0, 0, 0, 0]
+        #     rev_time_pkt_num_ft_list = [0, 0, 0, 0]
 
         # 2D list containing all the enhanced features calculated
-        engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list,
-                               rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_num_ft_list,
-                               rev_con_pkt_len_ft_list,
-                               time_flow_count, time_timedelta_ft_list, time_pkt_num_ft_list, time_pkt_len_ft_list,
-                               rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_num_ft_list,
-                               rev_time_pkt_len_ft_list]
+        engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list]
+        # engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list,
+        #                        rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_num_ft_list,
+        #                        rev_con_pkt_len_ft_list,
+        #                        time_flow_count, time_timedelta_ft_list, time_pkt_num_ft_list, time_pkt_len_ft_list,
+        #                        rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_num_ft_list,
+        #                        rev_time_pkt_len_ft_list]
 
         #
         # list containing the base features

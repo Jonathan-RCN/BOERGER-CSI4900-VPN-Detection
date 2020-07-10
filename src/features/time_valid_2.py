@@ -336,8 +336,8 @@ class RW_NETFLOW:
 
 
 def main():
-    connection_rw_size = cfg.CONNECTION_RW_SIZE
-    timw_rw_size_min = cfg.TIME_RW_SIZE
+    connection_rw_size = 5000
+    timw_rw_size_min = 0
 
     full_feature_netflow_csv_file = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
     #extracted_feature_csv_creator(full_feature_netflow_csv_file)
@@ -443,9 +443,9 @@ def netflow_feature_extraction(loop_upper_limit, connection_rw_size, time_rw_siz
                                                                                        connection_rw_size)
 
             # calculating the time based enhanced features
-            time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
-                NETFLOW_DICT[src_dest_ip_tag].caulculate_flow_time_based_features(
-                    RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][cfg.TIMESTAMP_COL_NUM], time_rw_size)
+            # time_flow_count, time_timedelta_ft_list, time_pkt_len_ft_list, time_pkt_num_ft_list = \
+            #     NETFLOW_DICT[src_dest_ip_tag].caulculate_flow_time_based_features(
+            #         RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][cfg.TIMESTAMP_COL_NUM], time_rw_size)
 
 
 
@@ -455,37 +455,38 @@ def netflow_feature_extraction(loop_upper_limit, connection_rw_size, time_rw_siz
             # dest-src ip tag of the given flow). Therefore, there is no need to track reverse flow base characteristics
             # (since the are already being accounted for) and thus only the enhanced feature values are extracted from
             # the reverse flow.
-            if dest_src_ip_tag in NETFLOW_DICT:
-                # if yes, calculating the reverse flow enhanced feature sets (connection and time)
-
-                rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_len_ft_list, rev_con_pkt_num_ft_list = \
-                    NETFLOW_DICT[dest_src_ip_tag].calculate_flow_connection_based_features(netflow_index,
-                                                                                           connection_rw_size)
-
-
-                rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_len_ft_list, rev_time_pkt_num_ft_list = \
-                    NETFLOW_DICT[dest_src_ip_tag].caulculate_flow_time_based_features(
-                        RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][cfg.TIMESTAMP_COL_NUM], time_rw_size)
-
-
-            else:
-                # Otherwise, if there is no reverse flow, setting all the reverse flow features to 0
-                rev_con_flow_count = [0]
-                rev_con_timedelta_ft_list = [0, 0, 0]
-                rev_con_pkt_len_ft_list = [0, 0, 0, 0]
-                rev_con_pkt_num_ft_list = [0, 0, 0, 0]
-                rev_time_flow_count = [0]
-                rev_time_timedelta_ft_list = [0, 0, 0]
-                rev_time_pkt_len_ft_list = [0, 0, 0, 0]
-                rev_time_pkt_num_ft_list = [0, 0, 0, 0]
+            # if dest_src_ip_tag in NETFLOW_DICT:
+            #     # if yes, calculating the reverse flow enhanced feature sets (connection and time)
+            #
+            #     rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_len_ft_list, rev_con_pkt_num_ft_list = \
+            #         NETFLOW_DICT[dest_src_ip_tag].calculate_flow_connection_based_features(netflow_index,
+            #                                                                                connection_rw_size)
+            #
+            #
+            #     rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_len_ft_list, rev_time_pkt_num_ft_list = \
+            #         NETFLOW_DICT[dest_src_ip_tag].caulculate_flow_time_based_features(
+            #             RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][cfg.TIMESTAMP_COL_NUM], time_rw_size)
+            #
+            #
+            # else:
+            #     # Otherwise, if there is no reverse flow, setting all the reverse flow features to 0
+            #     rev_con_flow_count = [0]
+            #     rev_con_timedelta_ft_list = [0, 0, 0]
+            #     rev_con_pkt_len_ft_list = [0, 0, 0, 0]
+            #     rev_con_pkt_num_ft_list = [0, 0, 0, 0]
+            #     rev_time_flow_count = [0]
+            #     rev_time_timedelta_ft_list = [0, 0, 0]
+            #     rev_time_pkt_len_ft_list = [0, 0, 0, 0]
+            #     rev_time_pkt_num_ft_list = [0, 0, 0, 0]
 
             # 2D list containing all the enhanced features calculated
-            engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list,
-                                   rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_num_ft_list,
-                                   rev_con_pkt_len_ft_list,
-                                   time_flow_count, time_timedelta_ft_list, time_pkt_num_ft_list, time_pkt_len_ft_list,
-                                   rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_num_ft_list,
-                                   rev_time_pkt_len_ft_list]
+            engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list]
+            # engineered_features = [con_flow_count, con_timedelta_ft_list, con_pkt_num_ft_list, con_pkt_len_ft_list,
+            #                        rev_con_flow_count, rev_con_timedelta_ft_list, rev_con_pkt_num_ft_list,
+            #                        rev_con_pkt_len_ft_list,
+            #                        time_flow_count, time_timedelta_ft_list, time_pkt_num_ft_list, time_pkt_len_ft_list,
+            #                        rev_time_flow_count, rev_time_timedelta_ft_list, rev_time_pkt_num_ft_list,
+            #                        rev_time_pkt_len_ft_list]
             # list containing the base features
             base_features = [RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][0],
                              RAW_DATA_DICT[netflow_index][cfg.DICT_FLOW_DATA_VALUES][cfg.SRC_IP_COL_NUM],

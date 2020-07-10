@@ -13,8 +13,8 @@ import src.feature_subsets as subset
 import os
 
 def main():
-    connection_rw_size = cfg.CONNECTION_RW_SIZE
-    timw_rw_size_min = cfg.TIME_RW_SIZE
+    connection_rw_size = 5000
+    timw_rw_size_min = 5
 
     features_csv = f'../../data/processed/full_ft_netflow_crw_{connection_rw_size}_trw_{timw_rw_size_min}.csv'
     label = subset.get_target(features_csv)
@@ -46,6 +46,9 @@ def main():
                        [comb_fwd_ft, 'Combined Forward'],
                        [comb_bwd_ft, 'Combined Backwards']]
 
+    model_info_tuned, time_info_tuned = gradient_boost_classifier_tuned(conn_fwd_ft, label)
+    plot_cf_matrix(model_info_tuned[2], conn_fwd_ft, label,
+                       f'Confusion Matrix: Ideal Model')
     # for ft_set in feature_subsets:
     #     print(f'  ///////////  {ft_set[1]} ///////////')
     #     print('Starting default model')
@@ -82,19 +85,19 @@ def main():
     #                    f'ROC Curve:: Gradient Boost - {ft_set[1]} Features - Tuned Param - Random State: {random_state} - RW Size: {connection_rw_size}-{timw_rw_size_min}')
 
 
-    model_info_default, time_info_default = random_forest_classifyer_default(baseline_ft, label,
-                                                                             random_state=random_state)
-
-    feature_importance_v2(model_info_default[2], baselone_ft_name, 'Random Forest - Baseline - Default Parameters - Feature Importance')
-
-    model_info_default, time_info_default = random_forest_classifyer_default(conn_ft, label,
-                                                                             random_state=random_state)
-    feature_importance_v2(model_info_default[2], conn_ft_name,
-                       'Random Forest - Conn - Default Parameters - Feature Importance')
-    model_info_default, time_info_default = random_forest_classifyer_default(comb_fwd_ft, label,
-                                                                             random_state=random_state)
-    feature_importance_v2(model_info_default[2], comb_fwd_ft_name,
-                       'Random Forest - Comb Fwd - Default Parameters - Feature Importance')
+    # model_info_default, time_info_default = random_forest_classifyer_default(baseline_ft, label,
+    #                                                                          random_state=random_state)
+    #
+    # feature_importance_v2(model_info_default[2], baselone_ft_name, 'Random Forest - Baseline - Default Parameters - Feature Importance')
+    #
+    # model_info_default, time_info_default = random_forest_classifyer_default(conn_ft, label,
+    #                                                                          random_state=random_state)
+    # feature_importance_v2(model_info_default[2], conn_ft_name,
+    #                    'Random Forest - Conn - Default Parameters - Feature Importance')
+    # model_info_default, time_info_default = random_forest_classifyer_default(comb_fwd_ft, label,
+    #                                                                          random_state=random_state)
+    # feature_importance_v2(model_info_default[2], comb_fwd_ft_name,
+    #                    'Random Forest - Comb Fwd - Default Parameters - Feature Importance')
 
 
 
@@ -104,7 +107,11 @@ def plot_cf_matrix(model, x_test,y_test,title ):
     disp.ax_.set_title(title[:title.find("- Random")])
     title = title.replace('::', ' --')
     title = title.replace(':', '')
-    plt.savefig(f'{os.getcwd()}/cf_matrix/{title}.png')
+    plt.tight_layout()
+    try:
+        plt.savefig(f'{os.getcwd()}\cf_matrix\{title}.png')
+    except:
+        pass
     plt.show()
 
 
@@ -114,7 +121,7 @@ def plot_cf_matrix_normalized(model, x_test, y_test, title):
     disp.ax_.set_title(f'{title[:title.find("- Random")]}-Normaized')
     title = title.replace('::', '--')
     title = title.replace(':', '')
-
+    plt.tight_layout()
     plt.savefig(f'{os.getcwd()}/cf_matrix/{title}-Normaized.png')
     plt.show()
 
@@ -123,6 +130,7 @@ def plot_ROC_curve(y_test,prediction_probabilities, title):
     skplt.metrics.plot_roc(y_test, prediction_probabilities, title=title[:title.find("- Random")],plot_micro=False, plot_macro=False)
     title = title.replace('::', '--')
     title = title.replace(':', '')
+    plt.tight_layout()
     plt.savefig(f'{os.getcwd()}/roc_curve/{title}.png')
     plt.show()
 
@@ -137,18 +145,9 @@ def random_forest_single_tree(ft_name, rf_model, target_filename):
                    feature_names=fn,
                    class_names=cn,
                    filled=True)
+    plt.tight_layout()
     fig.savefig(f'{target_filename}.png')
     plt.show()
-
-def feature_importance(model, ft_names, title, x_test):
-    # adapted from https://chrisalbon.com/machine_learning/trees_and_forests/feature_importance/
-    importances = model.feature_importances_
-    indices = np.argsort(importances)[::-1]
-    names = [ft_names for i in indices]
-    plt.figure()
-    plt.title(title)
-    plt.bar(range(x_test.shape[1]), importances[indices])
-    plt.xticks(range(x_test.shape[1]), names, rotation=45)
 
 def feature_importance_v2(model, ft_names, title):
 
